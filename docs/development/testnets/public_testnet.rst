@@ -5,7 +5,7 @@
 Public Testnet Set up
 ************************
 
-In this section, we are going to set up the BitShares Public Testnet. For the Public Testnet, you should download a testnet branch from the BitShares-Core Github repository. The testnet branch files are for the Testnet. 
+In this section, we are going to build and start a node on the BitShares Public Testnet. For the Public Testnet, you should checkout the **testnet** branch from the BitShares-Core Github repository.
 
 
 .. contents:: Table of Contents
@@ -14,7 +14,7 @@ In this section, we are going to set up the BitShares Public Testnet. For the Pu
 -------
 
 
-Depending on your OS, we have the Installation guides available. To see more Installation options: Go to :ref:`Installation Guide <installation-guide>`.
+This document provides a generic overview of the build process. We also provide more detailed installation guides for different OSes. For these guides, go to :ref:`Installation Guide <installation-guide>`.
 
 
 1. Installation
@@ -23,46 +23,39 @@ Depending on your OS, we have the Installation guides available. To see more Ins
 1-1. Download the Source files
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Let's get started, open a **new command line interface (CLI) window** and go to a directory you want to download the ``testnet`` branch files. And run the following command lines.  In this example, you create a ``bitshares-core-testnet`` directory.
+Let's get started! First, open a **command line interface (CLI) window** and go to a directory where you wish to download the BitShares repository. Now, run the following command lines:
 
  ::
  
-    git clone https://github.com/bitshares/bitshares-core.git bitshares-core-testnet
+    git clone https://github.com/bitshares/bitshares-core.git --recursive -b testnet bitshares-core-testnet
     cd bitshares-core-testnet/
-    git checkout testnet
-    git submodule update --init --recursive
 
+This will clone bitshares into the ``bitshares-core-testnet`` directory, along with all submodules, and checkout the **testnet** branch, then change directories into the repository.
 
 1-2. Initial Compilation
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-After you download a testnet branch files in a ``bitshares-core-testnet`` directory, let's build the programs. Run the following commands. This command will create two program files (witness_node and cli_wallet). 
+Now that we've cloned the repository, let's build the programs. Run the following commands. This will build two programs, ``witness_node`` and ``cli_wallet``. 
 
  ::
 
    cmake .
-    make
+   make witness_node cli_wallet
 
-You will find the compiled program files in the below folders. 
+You can find the compiled program binaries in the below folders. 
 
 .. list-table::
    :widths: 20 80
    :header-rows: 1
    
-   * - program name
-     - directory and folder
+   * - Program
+     - Path
    * - witness_node 
-     - ../bitshares-core-testnet/programs/witness_node/
+     - programs/witness_node/witness_node
    * - cli_wallet 
-     - ../bitshares-core-testnet/programs/cli_wallet/
+     - programs/cli_wallet/cli_wallet
 
 	 
-
-Genesis File
-~~~~~~~~~~~~~~~~
-
-As you know, each blockchain starts with a genesis block that definitions are in a :ref:`genesis file <public-testnet-genesis-example>`. The bitshares-core-testnet has already prepared **a genesis.json file for the Public Testnet.**  Unless you want to adjust parameter values, you will not need to modify the public testnet genesis.json file.  
-
 |
 
 --------------
@@ -70,87 +63,24 @@ As you know, each blockchain starts with a genesis block that definitions are in
 2. Configuration
 ----------------------------------------------------
 
-2-1. Obtain a config.ini file
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Upon first launch, ``witness_node`` will create a data directory which contains the persistent blockchain data as well as a configuration file named ``config.ini``.
 
-The BitShares Blockchain Data Configuration file exists in the blockchain data directory. And the data directory will be created by launching a witness_node. 
+At this point, we just want a default configuration. :ref:`See here  <bts-config-ini-eg-public-testnet>` for a more detailed overview of the config file and options.
 
-At this point, we just want to create a :ref:`configuration file (cinfig.ini)  <bts-config-ini-eg-public-testnet>` to observe the parameters. If you want to use the Public Testnet, you can use the default configuration settings without changes.
-
-Run the following command and end the process. In Windows, you can use ``[ctl]+c`` to end the process.
+Run the following command and press ``[Ctrl]+C`` after a few seconds to exit.
 
 :: 
    
    ./programs/witness_node/witness_node
-   
-   
-2-2. Blockchain Data Directory
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-As a default the BitShatres Blockchain data directory ``witness_node_data_dir`` will be created in a current directory.
+This will create a directory, ``witness_node_data_dir``, in the current directory. This directory contains the ``config.ini``, a ``logging.ini``, and some folders for data storage. These folders are not intended for manual modification.
 
-For example, if your current directory is ``bitshares-core-testnet`` and you run this command ``./programs/witness_node/witness_node``, you will find the data directory in the same current directory with the programs folder.
+Alternatively, you may specify a different data directory like so:
 
 ::
-
-  ../bitshares-core-testnet/
-      + /programs/
-        + /witness_node/
-        + /cli_wallet/
-        +....
-      + /witness_node_data_dir/
-        + /blockchain/
-          + /database/
-        + /logs/
-        + /p2p/
-        - [config.ini]
-        - [logging.ini]
-			  
-2-3. Create own Data Directory (alternative)
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-If you want to create own data directory, use ``--data-dir`` parameter and run the following command. This will create a **data** directory and a **testnet** folder inside of it.  
-
-::
-
-   ./programs/witness_node/witness_node --data-dir data/testnet
-
-::
-
-	../bitshares-core-testnet/
-		+ /programs/
-			+ /witness_node/
-			+ /cli_wallet/
-			+....
-		+ /data/
-		   + /testnet/
-			  + /blockchain/
-				+ /database/
-			  + /logs/
-			  + /p2p/
-			  - [config.ini]
-			  - [logging.ini]
-
-			  
-			  
-			  
-2-4. Observe the config.ini file
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-Although you can use the default :ref:`cinfig.ini <bts-config-ini-eg-public-testnet>` file for the Public Testnet, it's worth to recognize the parameters. 
-
-In BitShares, a seed node is a node that accept incoming P2P connection. Its address is hard coded in the program, so when a new node starts, it will connect to the seed nodes by default. Every node (including seed nodes) tells the connected nodes where other nodes are, so all nodes can connect to each other.
-
-.. list-table::
-   :widths: 20 80
-   :header-rows: 1
    
-   * - 
-     - Seed Node Information
-   * - testnet
-     - https://github.com/bitshares/bitshares-core/blob/testnet/libraries/app/application.cpp
-   * - production
-     - https://github.com/bitshares/bitshares-core/blob/master/libraries/app/application.cpp#L168-L187	 
+   ./programs/witness_node/witness_node -d /path/to/data/dir
+	  
 
 |
 
